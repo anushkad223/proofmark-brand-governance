@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Proofmark: catch it before it ships</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f8;--sf:#fff;--ink:#14213d;--mut:#586377;--ln:#d8dee8;--mk:#c8102e;--ok:#17734f;--wa:#8a5200;--hl:#ffe1e5;--hg:#d9f2e6;--hy:#fdecc8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1523;--sf:#172136;--ink:#e8edf6;--mut:#9ca9bf;--ln:#2a3851;--mk:#ff7589;--ok:#4cc79a;--wa:#f0b35a;--hl:#4a2230;--hg:#173f33;--hy:#4a3a17;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1523;--sf:#172136;--ink:#e8edf6;--mut:#9ca9bf;--ln:#2a3851;--mk:#ff7589;--ok:#4cc79a;--wa:#f0b35a;--hl:#4a2230;--hg:#173f33;--hy:#4a3a17;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif}
+.w{max-width:1100px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+h1{font:700 30px/1 Newsreader,Georgia,serif;margin:0}h1 i{color:var(--mk);font-style:normal}
+.tag{color:var(--mut);margin:2px 0 0;font-size:14px}
+button,input,textarea,select{font:inherit;color:inherit}
+input,textarea{background:var(--sf);border:1px solid var(--ln);border-radius:6px;padding:7px 9px;max-width:100%}
+textarea{width:100%;min-height:60px}
+button{background:var(--sf);border:1px solid var(--ink);border-radius:6px;padding:7px 14px;cursor:pointer;font-weight:500}
+button.p{background:var(--ink);color:var(--bg)}button:disabled{opacity:.4;cursor:not-allowed}button.g{border-color:var(--ln);color:var(--mut)}
+:focus-visible{outline:3px solid var(--mk);outline-offset:2px}
+.seg{display:flex;border:1px solid var(--ink);border-radius:8px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:var(--sf)}.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.rd{color:var(--mut);font-size:13px;margin:6px 0 0;text-align:right;width:100%}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 8px;padding:0;list-style:none}
+.steps li{padding:3px 12px;border:1px solid var(--ln);border-radius:99px;color:var(--mut);font-size:13px}
+.steps li.d{border-color:var(--ok);color:var(--ok)}.steps li.c{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.nx{background:var(--sf);border:1px solid var(--ln);border-left:5px solid var(--mk);padding:10px 14px;margin:8px 0 12px;border-radius:0 8px 8px 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.nx small{color:var(--mut);display:block}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--ln);margin-bottom:16px}
+.tabs button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;color:var(--mut)}
+.tabs button.on{border-color:var(--mk);color:var(--ink)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:18px;align-items:start}
+.c3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+@media(max-width:820px){.cols{grid-template-columns:minmax(0,1fr)}}
+.pan{background:var(--sf);border:1px solid var(--ln);border-radius:8px;padding:14px;margin-bottom:14px}
+.pan h2,.pan h3,h2.t{font:600 20px Newsreader,Georgia,serif;margin:0 0 8px}
+.hero{padding:26px 8px 10px}.hero h2{font:700 clamp(32px,6vw,52px)/1.05 Newsreader,Georgia,serif;margin:0 0 12px;max-width:16ch}
+.hero p{max-width:62ch;font-size:17px;margin:0 0 14px}
+.doc p{margin:0 0 10px;font-family:Newsreader,Georgia,serif;font-size:17px}
+mark{background:var(--hl);color:inherit;border-bottom:2px solid var(--mk);padding:0 1px}
+mark.accepted,mark.edited{background:var(--hg);border-color:var(--ok)}mark.dismissed{background:var(--hy);border-color:var(--wa)}
+.fc{border:1px solid var(--ln);border-left:5px solid var(--mk);border-radius:6px;padding:10px 12px;margin-bottom:10px;background:var(--sf)}
+.fc.accepted,.fc.edited{border-left-color:var(--ok)}.fc.dismissed{border-left-color:var(--wa)}
+.fh{display:flex;justify-content:space-between;gap:8px}.fc p{margin:6px 0}
+.pill{font-size:12px;color:var(--mut)}.why{color:var(--mut);font-size:13px}
+blockquote{margin:6px 0;padding:4px 10px;border-left:3px solid var(--ln);color:var(--mut);font-size:13px}
+.fx s,.df s{color:var(--mk)}.fx b,.df b{color:var(--ok)}.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--ln);vertical-align:top}
+.sc{overflow-x:auto}.ex{color:var(--mk)}code{font-size:12px;word-break:break-all}
+.cm{border-bottom:1px solid var(--ln);padding:6px 0}.cm small{color:var(--mut)}
+.msg{color:var(--mk);min-height:20px;margin:0 0 4px}
+.bar{height:8px;background:var(--ln);border-radius:9px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--ok)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips span{border:1px solid var(--ln);border-radius:99px;padding:2px 10px;font-size:13px}
+ol.how{padding-left:20px;margin:0}ol.how li{margin-bottom:6px}
+ul.tick{list-style:none;padding:0;margin:0}ul.tick li{padding-left:22px;position:relative;margin-bottom:5px}ul.tick li:before{content:"\2713";color:var(--ok);position:absolute;left:0;font-weight:700}
+.ok{color:var(--ok);font-weight:600}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.98);box-shadow:0 0 0 0 var(--ok)}40%{transform:scale(1.015);box-shadow:0 0 0 7px transparent}100%{transform:none}}
+@keyframes mk{from{background-color:transparent;border-bottom-color:transparent}}
+.enter>*{animation:up .45s cubic-bezier(.2,.7,.2,1) both}
+.enter>*:nth-child(2){animation-delay:.05s}.enter>*:nth-child(3){animation-delay:.1s}.enter>*:nth-child(4){animation-delay:.15s}.enter>*:nth-child(5){animation-delay:.2s}.enter>*:nth-child(n+6){animation-delay:.25s}
+.enter mark{animation:mk .8s ease .5s both}
+.pop{animation:pop .55s ease}
+.seq>*{animation:up .5s ease both}.seq>*:nth-child(3){animation-delay:.5s}.seq>*:nth-child(4){animation-delay:.9s}.seq>*:nth-child(5){animation-delay:1.3s}.seq>*:nth-child(6){animation-delay:1.7s}
+.bar i{transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.steps li{transition:background .3s,color .3s}
+button{transition:transform .12s,background .2s}button:active:not(:disabled){transform:scale(.96)}
+.msg:not(:empty){animation:up .25s ease}
+.fc{transition:border-color .3s}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style></head><body><div class="w">
+<header><div><h1>Proof<i>mark</i></h1><p class="tag">Brand governance check for drafts, before anything is published. <span id="mode" class="pill"></span></p></div>
+<div><div class="seg" role="group" aria-label="Acting as"><button data-a="role" data-v="Admin">Admin</button><button data-a="role" data-v="Creator">Creator</button><button data-a="role" data-v="Reviewer">Reviewer</button></div></div>
+<p class="rd" id="rd"></p></header>
+<div id="app"></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const K="proofmark_r2_v2",$=i=>document.getElementById(i);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LIB0=()=>({claims:[{id:"C-014",text:"Rated 4.6/5 by 1,200+ customers",until:"2027-06-30"},{id:"C-021",text:"Free delivery on orders over ₹999",until:"2027-03-31"},{id:"C-007",text:"Trusted by 500+ teams",until:"2026-09-30"}],offer:{end:"15 Dec",disc:20},terms:[["Bright[ -]?loop","Brightloop"],["e-mail","email"],["\\bcheap\\b","affordable"]]});
+const RULE={claim:"Claims policy 3.2: any superlative or comparative claim must match an entry in the approved claim ledger.",exp:"Claims policy 3.4: a claim may be used only until its valid-until date.",term:"Glossary: write the brand as “Brightloop”, say “email” not “e-mail”, avoid “cheap”.",a11y:"WCAG 2.2, 1.4.3 Contrast (Minimum): 4.5:1 for normal text, 3:1 for large text. 1.1.1: images need text alternatives.",offer:L=>"Approved offers sheet: the offer ends "+L.offer.end+" and the discount is "+L.offer.disc+"% off."};
+const WHY={"Claim":"Unproven claims mislead customers and break advertising rules.","Expired claim":"Evidence expires. An old claim quietly becomes untrue.","Offer fact":"A wrong date or discount causes refund disputes.","Terminology":"Consistent wording keeps the brand recognisable.","Accessibility":"Low contrast and missing alt text shut readers out."};
+const ROLES={Admin:"Admin loads the approved sources: claims, offer facts and glossary.",Creator:"Creator uploads a draft and decides on every finding.",Reviewer:"Reviewer approves the checked draft or sends it back with a note."};
+const SAMPLE=[{text:"Spring offer: your next brief, on us",color:"B8C4D0",sz:40,bold:true},{text:"Hi there! Bright Loop makes planning easy. Our platform is the #1 choice for small teams.",sz:22},{text:"Trusted by 500+ teams. Get 25% off any plan. Offer ends 31 Dec.",sz:22},{text:"Questions? Send them by e-mail. Cheap, fast and simple.",sz:22}];
+const STAGES=["Draft","Checked","In review","Changes requested","Approved"];
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+if(!S)S={role:"Creator",tab:"Overview",lib:LIB0(),doc:null,log:[],ui:{}};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function log(a,d){const prev=S.log.length?S.log[S.log.length-1].hash:"0",t=new Date().toISOString();S.log.push({t,role:S.role,a,d,hash:await sha(prev+"|"+t+"|"+S.role+"|"+a+"|"+d)})}
+const lum=h=>{const c=[0,2,4].map(i=>{const v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]};
+const cr=(a,b)=>{const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05)};
+const hx=c=>c.map(v=>v.toString(16).padStart(2,"0")).join("").toUpperCase();
+function darken(h){let c=[0,2,4].map(i=>parseInt(h.substr(i,2),16));while(cr(hx(c),"FFFFFF")<4.5&&c.some(v=>v>0))c=c.map(v=>Math.max(0,v-8));return hx(c)}
+/* Check engine: exact rules over parsed paragraphs. Every finding cites the rule it applies. */
+function check(P){const F=[],L=S.lib,td=new Date().toISOString().slice(0,10),ok=L.claims.find(c=>c.until>=td);
+const add=o=>F.push(Object.assign({id:"F"+(F.length+1),st:"open",kind:"text"},o));
+P.forEach((p,i)=>{const t=p.text;
+const sm=t.match(/#1\b|number one|best in class|the best|world-class|guaranteed|unbeatable|market leader/i);
+if(sm&&!L.claims.some(c=>t.includes(c.text))){const s=(t.match(/[^.!?]+[.!?]*\s*/g)||[t]).find(x=>x.includes(sm[0])).trim();
+add({type:"Claim",pi:i,match:sm[0],span:s,fix:ok?ok.text+".":null,rule:RULE.claim,msg:"No approved evidence supports “"+sm[0]+"”. The claim ledger has no matching entry."})}
+L.claims.filter(c=>c.until<td&&t.includes(c.text)).forEach(c=>add({type:"Expired claim",pi:i,match:c.text,span:c.text,fix:ok?ok.text:null,rule:RULE.exp,msg:"Claim "+c.id+" expired on "+c.until+"."}));
+const dt=/\b(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/g;let m;
+if(/ends|until|till|valid|offer/i.test(t))while((m=dt.exec(t)))if(m[0]!==L.offer.end)add({type:"Offer fact",pi:i,match:m[0],span:m[0],fix:L.offer.end,rule:RULE.offer(L),msg:"“"+m[0]+"” conflicts with the approved end date, "+L.offer.end+"."});
+const pc=t.match(/(\d+)% off/i);if(pc&&+pc[1]!==+L.offer.disc)add({type:"Offer fact",pi:i,match:pc[0],span:pc[0],fix:L.offer.disc+"% off",rule:RULE.offer(L),msg:"“"+pc[0]+"” conflicts with the approved discount, "+L.offer.disc+"% off."});
+L.terms.forEach(([re,r])=>{const x=t.match(new RegExp(re,"i"));if(!x)return;const fx=/^[A-Z]/.test(x[0])?r[0].toUpperCase()+r.slice(1):r;if(x[0]!==fx)add({type:"Terminology",pi:i,match:x[0],span:x[0],fix:fx,rule:RULE.term,msg:"“"+x[0]+"” should be “"+fx+"”."})});
+if(p.color){const need=(p.bold&&p.sz>=28)||p.sz>=36?3:4.5,n=cr(p.color,"FFFFFF");if(n<need)add({type:"Accessibility",kind:"color",pi:i,match:"#"+p.color,span:"#"+p.color,fix:"#"+darken(p.color),rule:RULE.a11y,msg:"Text colour #"+p.color+" on white has contrast "+n.toFixed(1)+":1. The minimum here is "+need+":1."})}
+if(p.img&&!p.alt)add({type:"Accessibility",kind:"note",pi:i,match:"image",span:"",fix:null,rule:RULE.a11y,msg:"This image has no alt text."})});
+return F}
+async function parse(buf){const z=await JSZip.loadAsync(buf),x=await z.file("word/document.xml").async("string"),d=new DOMParser().parseFromString(x,"application/xml"),W="http://schemas.openxmlformats.org/wordprocessingml/2006/main",g=(p,n)=>p.getElementsByTagNameNS(W,n)[0];
+return[...d.getElementsByTagNameNS(W,"p")].map(p=>{const c=g(p,"color"),s=g(p,"sz"),dr=p.getElementsByTagNameNS("*","docPr")[0],cv=c&&c.getAttributeNS(W,"val");
+return{text:[...p.getElementsByTagNameNS(W,"t")].map(e=>e.textContent).join(""),color:cv&&/^[0-9a-f]{6}$/i.test(cv)?cv.toUpperCase():null,sz:s?+s.getAttributeNS(W,"val"):22,bold:!!g(p,"b"),img:!!dr,alt:dr?dr.getAttribute("descr")||"":""}}).filter(p=>p.text.trim()||p.img)}
+const cur=()=>S.doc&&S.doc.v[S.doc.v.length-1];
+async function addVersion(P,why){const D=S.doc,prev=cur(),F=check(P);
+if(prev)F.forEach(f=>{const d=prev.F.find(o=>o.st==="dismissed"&&o.type===f.type&&o.match===f.match);if(d){f.st="dismissed";f.reason=d.reason}});
+D.v.push({n:D.v.length+1,P,F});D.status="Checked";await log("Checked","Version "+D.v.length+" ("+why+"): "+F.length+" findings")}
+async function openDoc(name,P){S.doc={title:name,status:"Draft",v:[],c:[]};await log("Uploaded",name);await addVersion(P,"first check")}
+const need={sample:"Creator",demo:"Creator",file:"Creator",accept:"Creator",edit:"Creator",saveedit:"Creator",dis:"Creator",confdis:"Creator",undo:"Creator",submit:"Creator",newver:"Creator",approve:"Reviewer",back:"Reviewer",comment:"Creator|Reviewer",addclaim:"Admin",delclaim:"Admin",saveoffer:"Admin"};
+async function act(a,d){S.ui.msg="";const V=cur(),f=V&&V.F.find(x=>x.id===d.id),D=S.doc;
+if(a==="demo"&&S.role!=="Creator")S.role="Creator";
+if(need[a]&&!need[a].split("|").includes(S.role)){S.ui.msg="Switch to the "+need[a].replace("|"," or ")+" role to do this.";save();render();return}
+if(SERVER&&await srv(a,d)){save();render();return}
+if(a==="tab")S.tab=d.v;
+else if(a==="role"){S.role=d.v}
+else if(a==="demo"){await openDoc("spring_offer_email.docx (sample)",SAMPLE.map(p=>({...p})));S.tab="Workspace"}
+else if(a==="accept"){f.st="accepted";await log("Accepted",f.id+" "+f.type)}
+else if(a==="edit")S.ui.edit=d.id;
+else if(a==="saveedit"){const v=$("e_"+d.id).value.trim();if(!v){S.ui.msg="Type the replacement text first.";save();render();return}f.st="edited";f.newText=v;S.ui.edit=null;await log("Edited",f.id+" to “"+v+"”")}
+else if(a==="dis")S.ui.dis=d.id;
+else if(a==="confdis"){const r=$("r_"+d.id).value.trim();if(!r){S.ui.msg="Dismissing needs a reason.";save();render();return}f.st="dismissed";f.reason=r;S.ui.dis=null;await log("Dismissed",f.id+" "+f.type+": "+r)}
+else if(a==="undo"){f.st="open";delete f.reason;await log("Reopened",f.id)}
+else if(a==="submit"){if(V.F.some(x=>x.st==="open")){S.ui.msg="Decide on every finding first.";save();render();return}D.status="In review";await log("Submitted for review","Version "+V.n)}
+else if(a==="approve"){D.status="Approved";const n=$("note").value.trim();if(n)D.c.push({role:S.role,t:new Date().toISOString(),x:n});await log("Approved","Version "+V.n)}
+else if(a==="back"){const n=$("note").value.trim();if(!n){S.ui.msg="Add a note saying what to change.";save();render();return}D.c.push({role:S.role,t:new Date().toISOString(),x:n});D.status="Changes requested";await log("Sent back",n)}
+else if(a==="newver"){const P=V.P.map(p=>({...p}));V.F.forEach(f=>{if(f.fix&&(f.st==="accepted"||f.st==="edited")){const t=f.st==="edited"?f.newText:f.fix;if(f.kind==="color")P[f.pi].color=t.replace("#","");else P[f.pi].text=P[f.pi].text.replace(f.span,t)}});await addVersion(P,"accepted fixes applied")}
+else if(a==="comment"){const n=$("note").value.trim();if(!n){S.ui.msg="Write a comment first.";save();render();return}D.c.push({role:S.role,t:new Date().toISOString(),x:n});await log("Commented",n)}
+else if(a==="addclaim"){const t=$("nc_t").value.trim(),u=$("nc_u").value;if(!t||!u){S.ui.msg="Enter the claim and its valid-until date.";save();render();return}S.lib.claims.push({id:"C-"+String(100+S.lib.claims.length),text:t,until:u});await log("Library","Added claim: "+t)}
+else if(a==="delclaim"){S.lib.claims=S.lib.claims.filter(c=>c.id!==d.id);await log("Library","Removed claim "+d.id)}
+else if(a==="saveoffer"){S.lib.offer={end:$("of_e").value.trim(),disc:+$("of_d").value};await log("Library","Offer facts: ends "+S.lib.offer.end+", "+S.lib.offer.disc+"% off")}
+else if(a==="verify"){let prev="0",ok=true;for(const e of S.log){if(e.hash!==await sha(prev+"|"+e.t+"|"+e.role+"|"+e.a+"|"+e.d)){ok=false;break}prev=e.hash}S.ui.msg=ok?"Audit chain intact: "+S.log.length+" entries verified.":"Audit chain broken: an entry was changed."}
+else if(a==="selftest")S.ui.test=selfTest();
+else if(a==="reset"){S={role:"Creator",tab:"Overview",lib:LIB0(),doc:null,log:[],ui:{}}}
+save();render()}
+let SERVER=false,TOK={},PREV={},PP={},LK="";
+const UN={Admin:"admin",Creator:"creator",Reviewer:"reviewer"};
+async function api(p,o){const r=await fetch(p,o);let j=null;try{j=await r.json()}catch(e){}
+if(!r.ok){const d=j&&j.detail;throw new Error(typeof d==="string"?d:Array.isArray(d)?d.map(x=>x.msg).join(". "):"Server error "+r.status)}return j}
+async function call(p,m,body){if(!TOK[S.role])TOK[S.role]=(await api("/api/login",{method:"POST",body:new URLSearchParams({username:UN[S.role],password:"proofmark"})})).access_token;
+const h={Authorization:"Bearer "+TOK[S.role]},fd=typeof FormData!=="undefined"&&body instanceof FormData;if(body&&!fd)h["Content-Type"]="application/json";
+return api(p,{method:m||"GET",headers:h,body:body?(fd?body:JSON.stringify(body)):undefined})}
+const cp=o=>JSON.parse(JSON.stringify(o));
+/* Server mode: every action goes to the FastAPI backend, which enforces roles and keeps the audit chain. */
+async function srv(a,d){const D=S.doc,fp=D&&"/api/docs/"+D.id;
+try{
+if(a==="demo"){const b=await(await fetch("/samples/spring_offer_email.docx")).blob(),fd=new FormData();fd.append("file",b,"spring_offer_email.docx");S.doc=await call("/api/docs","POST",fd);S.tab="Workspace";return true}
+if(a==="accept"||a==="undo"){S.doc=await call(fp+"/findings/"+d.id,"POST",{action:a});return true}
+if(a==="saveedit"){const v=$("e_"+d.id).value.trim();if(!v)throw new Error("Type the replacement text first.");S.doc=await call(fp+"/findings/"+d.id,"POST",{action:"edit",text:v});S.ui.edit=null;return true}
+if(a==="confdis"){const r=$("r_"+d.id).value.trim();if(!r)throw new Error("Dismissing needs a reason.");S.doc=await call(fp+"/findings/"+d.id,"POST",{action:"dismiss",reason:r});S.ui.dis=null;return true}
+if(a==="submit"){S.doc=await call(fp+"/submit","POST");return true}
+if(a==="approve"||a==="back"){S.doc=await call(fp+"/review","POST",{decision:a,note:$("note").value.trim()});return true}
+if(a==="newver"){S.doc=await call(fp+"/versions","POST");return true}
+if(a==="comment"){const n=$("note").value.trim();if(!n)throw new Error("Write a comment first.");S.doc=await call(fp+"/comments","POST",{text:n});return true}
+if(a==="addclaim"){const t=$("nc_t").value.trim(),u=$("nc_u").value;if(!t||!u)throw new Error("Enter the claim and its valid-until date.");const L=cp(S.lib);L.claims.push({id:"C-"+String(100+L.claims.length),text:t,until:u});S.lib=await call("/api/library","PUT",L);return true}
+if(a==="delclaim"){const L=cp(S.lib);L.claims=L.claims.filter(c=>c.id!==d.id);S.lib=await call("/api/library","PUT",L);return true}
+if(a==="saveoffer"){const L=cp(S.lib);L.offer={end:$("of_e").value.trim(),disc:+$("of_d").value};S.lib=await call("/api/library","PUT",L);return true}
+if(a==="verify"){const j=await call("/api/audit/verify");S.log=await call("/api/audit");S.ui.msg=j.intact?"Audit chain intact: "+j.entries+" entries verified on the server.":"Audit chain broken at entry "+j.broken_at+".";return true}
+if(a==="tab"&&d.v==="Log"){S.log=await call("/api/audit");S.tab="Log";return true}
+if(a==="tab"&&d.v==="Library"){S.lib=await call("/api/library");S.tab="Library";return true}
+}catch(e){S.ui.msg=e.message;return true}
+return false}
+function popc(f){const k=(S.doc.id||"l")+"v"+cur().n+f.id,p=PREV[k]!==undefined&&PREV[k]!==f.st;PREV[k]=f.st;return p?" pop":""}
+function selfTest(){const exp=["#B8C4D0","#1","Bright Loop","Trusted by 500+ teams","31 Dec","25% off","e-mail","Cheap"],F=check(SAMPLE.map(p=>({...p}))),found=exp.filter(m=>F.some(f=>f.match===m)).length,clean=check([{text:"Rated 4.6/5 by 1,200+ customers. Offer ends 15 Dec. Get 20% off. Email us.",sz:22}]).length;return{found,total:exp.length,extra:F.length-found,clean}}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(b)act(b.dataset.a,b.dataset)});
+document.addEventListener("change",async e=>{if(e.target.id!=="file")return;const fl=e.target.files[0];if(!fl)return;
+if(S.role!=="Creator"){S.ui.msg="Switch to the Creator role to upload.";save();render();return}
+try{if(SERVER){const fd=new FormData();fd.append("file",fl,fl.name);S.doc=await call("/api/docs","POST",fd)}else{const P=await parse(await fl.arrayBuffer());if(!P.length)throw 0;await openDoc(fl.name,P)}S.tab="Workspace"}catch(x){S.ui.msg=SERVER&&x.message?x.message:"Could not read this file. Upload a .docx saved from Word or Google Docs."}save();render()});
+const when=t=>new Date(t).toLocaleString([],{dateStyle:"medium",timeStyle:"short"});
+function stepNo(){const D=S.doc;if(!D)return 1;const o=cur().F.some(f=>f.st==="open");return{Checked:o?2:3,"In review":4,"Changes requested":5,Approved:6}[D.status]}
+function nextStep(){const D=S.doc,r=S.role,sw=x=>["Switch to "+x,"role",x];
+if(!D)return r==="Creator"?["Upload a .docx draft in the Workspace tab, or run the guided demo.","Run guided demo","demo"]:["Switch to Creator to start a draft.",...sw("Creator")];
+const o=cur().F.filter(f=>f.st==="open").length;
+if(D.status==="Checked"){if(r!=="Creator")return["The creator is deciding on findings.",...sw("Creator")];return o?["Decide on the "+o+" open finding"+(o>1?"s":"")+" in the Workspace tab: accept, edit, or dismiss with a reason."]:["Every finding is decided.","Submit for review","submit"]}
+if(D.status==="In review")return r==="Reviewer"?["Read the decisions, then approve or send back with a note."]:["The draft is waiting for a reviewer.",...sw("Reviewer")];
+if(D.status==="Changes requested")return r==="Creator"?["The reviewer sent it back. Create the next version: accepted fixes are applied and the draft is checked again.","Create version "+(cur().n+1),"newver"]:["Waiting for the creator to revise.",...sw("Creator")];
+return["Approved. Proofmark never publishes, so hand the file to your publishing channel. Every step is in the audit log.","Open audit log","tab","Log"]}
+function hl(p,i,F){let h=esc(p.text);F.filter(f=>f.pi===i&&f.kind==="text").forEach(f=>{const e=esc(f.match);h=h.replace(e,()=>`<mark class="${f.st}" title="${esc(f.type)}">${e}</mark>`)});return h}
+function fcard(f){const u=S.ui,lab={open:"Needs a decision",accepted:"Accepted",edited:"Edited",dismissed:"Dismissed"}[f.st],can=S.role==="Creator"&&S.doc.status==="Checked",id=` data-id="${f.id}"`;
+let h=`<article class="fc ${f.st}${popc(f)}"><div class="fh"><b>${f.type}</b><span class="pill">${lab}</span></div><p>${esc(f.msg)}</p><p class="why">Why it matters: ${WHY[f.type]}</p><blockquote>${esc(f.rule)}</blockquote>`;
+h+=f.fix?`<p class="fx">Suggested fix: <s>${esc(f.span)}</s> <b>${esc(f.fix)}</b></p>`:`<p class="fx">No approved replacement exists. Remove it or rewrite it by hand.</p>`;
+if(f.st==="edited")h+=`<p class="fx">Replaced with: <b>${esc(f.newText)}</b></p>`;
+if(f.st==="dismissed")h+=`<p>Reason given: ${esc(f.reason)}</p>`;
+if(u.edit===f.id)h+=`<div class="row"><input id="e_${f.id}" aria-label="Replacement text" value="${esc(f.fix||"")}"><button class="p" data-a="saveedit"${id}>Save edit</button></div>`;
+else if(u.dis===f.id)h+=`<div class="row"><input id="r_${f.id}" aria-label="Reason for dismissing" placeholder="Why is this not an issue?"><button class="p" data-a="confdis"${id}>Dismiss</button></div>`;
+else if(can)h+=`<div class="row">${f.st==="open"?`<button class="p" data-a="accept"${id}>${f.fix?"Accept fix":"I will fix it by hand"}</button>${f.fix&&f.kind==="text"?`<button data-a="edit"${id}>Edit</button>`:""}<button data-a="dis"${id}>Dismiss</button>`:`<button class="g" data-a="undo"${id}>Undo</button>`}</div>`;
+return h+`</article>`}
+function diff(){const D=S.doc,V=cur();if(V.n<2)return"";const A=D.v[V.n-2].P,rows=V.P.map((p,i)=>({a:A[i],b:p})).filter(r=>r.a&&(r.a.text!==r.b.text||r.a.color!==r.b.color));
+return rows.length?`<div class="pan"><h3>What changed from version ${V.n-1}</h3>${rows.map(r=>`<p class="df"><s>${esc(r.a.text)}</s>${r.a.color!==r.b.color?` <small>colour #${r.a.color} changed to #${r.b.color}</small>`:""}<br><b>${esc(r.b.text)}</b></p>`).join("")}</div>`:""}
+function workTab(){const D=S.doc;if(!D)return`<div class="pan"><h3>Start with a draft</h3><p>Proofmark reads the text, colours and images in a .docx file and checks them against the approved sources in the Source library.</p><p><input type="file" id="file" accept=".docx" aria-label="Upload a .docx draft"> <button class="p" data-a="demo">Run guided demo</button></p><p class="why">The demo uses a fictional brand, Brightloop, with eight planted problems.</p></div>`;
+const V=cur(),o=V.F.filter(f=>f.st==="open").length,done=V.F.length-o,pct=V.F.length?Math.round(done/V.F.length*100):100;
+const LP=(PP.k===D.title+V.n)?PP.v:0;PP={k:D.title+V.n,v:pct};let rv="";
+if(D.status==="Checked")rv=`<button class="p" data-a="submit"${o?" disabled":""}>Submit for review</button> ${o?o+" findings still open":""}`;
+else if(D.status==="In review")rv=`<button class="p" data-a="approve">Approve</button> <button data-a="back">Send back with note</button>`;
+else if(D.status==="Changes requested")rv=`<button class="p" data-a="newver">Create version ${V.n+1}</button>`;
+else rv=`<span class="ok">Approved.</span> Proofmark does not publish. Hand the file to your publishing channel.`;
+const types={};V.F.forEach(f=>types[f.type]=(types[f.type]||0)+1);
+return`<div class="pan"><b>${esc(D.title)}</b>, version ${V.n} of ${D.v.length}: ${V.F.length} findings, ${done} decided<div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${LP}%" data-w="${pct}"></i></div><div class="chips">${Object.entries(types).map(([k,v])=>`<span>${k} ${v}</span>`).join("")}</div></div>
+<div class="cols"><div><div class="pan doc"><h3>Draft text</h3><p class="why">Highlighted text has a finding. Red is open, green is accepted, amber is dismissed.</p>${V.P.map((p,i)=>`<p style="${p.color?"color:#"+p.color+";":""}${p.sz>=36?"font-size:24px;font-weight:700;":""}">${p.img?"[image] ":""}${hl(p,i,V.F)}</p>`).join("")}</div>${diff()}
+<div class="pan"><h3>Review</h3><p>${rv}</p><textarea id="note" aria-label="Comment or review note" placeholder="Comment or review note"></textarea><div class="row"><button data-a="comment">Add comment</button></div>${D.c.map(c=>`<div class="cm"><b>${c.role}</b> <small>${when(c.t)}</small><br>${esc(c.x)}</div>`).join("")}</div></div>
+<div><h2 class="t">Findings</h2>${V.F.length?V.F.map(fcard).join(""):`<div class="pan">No findings. Every check passed against the source library.</div>`}</div></div>`}
+function libTab(){const L=S.lib,td=new Date().toISOString().slice(0,10),A=S.role==="Admin",dis=A?"":" disabled";
+return`<p class="why" style="max-width:70ch">These are the approved sources every draft is checked against. ${A?"You are Admin, so you can edit them.":"Switch to Admin to edit them."} Changes apply to the next check.</p><div class="cols"><div><div class="pan"><h3>Claim ledger</h3><p class="why">Only these claims may be used, and only until their valid-until date.</p><div class="sc"><table><tr><th>ID</th><th>Approved claim</th><th>Valid until</th><th></th></tr>${L.claims.map(c=>`<tr><td>${c.id}</td><td>${esc(c.text)}</td><td class="${c.until<td?"ex":""}">${c.until}${c.until<td?" (expired)":""}</td><td><button class="g" data-a="delclaim" data-id="${c.id}"${dis}>Remove</button></td></tr>`).join("")}</table></div><div class="row"><input id="nc_t" aria-label="New claim" placeholder="New approved claim"${dis}><input id="nc_u" type="date" aria-label="Valid until"${dis}><button data-a="addclaim"${dis}>Add claim</button></div></div>
+<div class="pan"><h3>Approved offer facts</h3><div class="row"><label>Offer ends <input id="of_e" value="${esc(L.offer.end)}"${dis}></label><label>Discount % <input id="of_d" type="number" value="${L.offer.disc}"${dis}></label><button data-a="saveoffer"${dis}>Save facts</button></div></div></div>
+<div><div class="pan"><h3>Rules Proofmark cites</h3>${[RULE.claim,RULE.exp,RULE.offer(L),RULE.term,RULE.a11y].map(r=>`<blockquote>${esc(r)}</blockquote>`).join("")}</div></div></div>`}
+function logTab(){return`<div class="pan"><h3>Audit log</h3><p class="why">Every action is recorded with who did it and when. Each entry’s hash includes the one before it, so editing history is detectable.</p><div class="row" style="margin:0 0 8px"><button data-a="verify">Verify audit chain</button></div><div class="sc"><table><tr><th>Time</th><th>Role</th><th>Action</th><th>Detail</th><th>Hash</th></tr>${S.log.length?S.log.map(e=>`<tr><td>${when(e.t)}</td><td>${e.role}</td><td>${e.a}</td><td>${esc(e.d)}</td><td><code>${e.hash.slice(0,10)}</code></td></tr>`).join(""):`<tr><td colspan="5">Nothing yet. Run the guided demo and every decision appears here.</td></tr>`}</table></div></div>`}
+function overTab(){return`<section class="hero"><h2>Catch it before it ships.</h2><p>Proofmark checks a draft against your company’s approved sources before anyone publishes it. Every issue names the rule it breaks and offers a fix the company can prove. A person always decides.</p><p><button class="p" data-a="demo">Run guided demo</button> <button data-a="tab" data-v="Workspace">Upload your own .docx</button></p></section>
+<div class="c3"><div class="pan seq"><h3>An example finding</h3><p>The draft says: “Our platform is <mark>the #1 choice</mark> for small teams.”</p><p class="fx"><b>Claim:</b> no approved evidence supports “#1”. The claim ledger has no matching entry.</p><blockquote>${esc(RULE.claim)}</blockquote><p class="fx">Suggested fix: <b>Rated 4.6/5 by 1,200+ customers.</b></p><p class="why">You accept, edit, or dismiss with a reason.</p></div>
+<div class="pan"><h3>Why it matters</h3><p>98% of 7,199 ads scrutinised by India’s ad regulator needed some modification (ASCI Annual Complaints Report 2024-25).</p><p>In Moffatt v. Air Canada (2024) a tribunal held the airline responsible for wrong information on its own chatbot.</p></div>
+<div class="pan"><h3>Who does what</h3>${Object.entries(ROLES).map(([k,v])=>`<p><b>${k}</b><br>${v}</p>`).join("")}<p class="why">Use the buttons at the top right to switch role.</p></div></div>
+<div class="pan"><h3>How it works</h3><ol class="how"><li>Admin loads the approved sources: claim ledger, offer facts, glossary.</li><li>Creator uploads a .docx draft.</li><li>Proofmark checks it: claims, expired claims, offer facts, terminology, contrast and alt text.</li><li>Creator accepts, edits, or dismisses each finding. Dismissing needs a reason.</li><li>Reviewer approves, or sends it back with a note. Sending back creates a new version that is checked again.</li><li>Every step is written to a tamper-evident audit log.</li></ol></div>`}
+function judgeTab(){const t=S.ui.test;
+return`<div class="pan"><h3>Round 2 submission: Team TrueNorth, Proofmark</h3><p>Problem statement: Inkloom AI, brand governance. Participant: Anushka Dakare (solo).</p><ul class="tick"><li>Working project: this page. Press “Run guided demo” on the Overview tab.</li><li>Source code: a FastAPI backend and this interface, linked in the submission form.</li><li>Updated project PDF and the three Round 3 improvements: in the submission form and below.</li></ul></div>
+<div class="cols"><div><div class="pan"><h3>Completed features</h3><ul class="tick"><li>Source library: claim ledger with valid-until dates, approved offer facts, glossary (Admin editable)</li><li>DOCX upload and parsing</li><li>Six checks: unsupported claims, expired claims, offer date and discount, terminology, text contrast, missing alt text</li><li>Every finding cites its rule and suggests an approved fix</li><li>Accept, edit, or dismiss with a required reason; undo</li><li>Status flow: Draft, Checked, In review, Changes requested, Approved</li><li>Reviewer approve or send back; comments</li><li>Versioning: accepted fixes applied, draft re-checked, earlier dismissals carried over, changes shown</li><li>Role-based actions: each role can only do its own steps</li><li>SHA-256 hash-chained audit log with a verify button</li></ul></div>
+<div class="pan"><h3>Changes to the original plan</h3><ul class="tick"><li>Rule engine runs in JavaScript in this interface so the whole workflow works from a link. The repository also holds the same engine in Python behind a FastAPI server with JWT roles and a database, covered by automated tests.</li><li>When this interface is served by the FastAPI server (badge in the header) every action goes to the real API with logins, roles and a database. Without a server it runs the same workflow in the browser.</li><li>Round 1 had the rules as a Python prototype with no interface. Round 2 adds DOCX upload, decisions, comments, versions, roles, approval and the audit log.</li><li>The AI judge, multi-user workspaces and insights move to Round 3.</li></ul></div></div>
+<div><div class="pan"><h3>Technology and implementation</h3><div class="sc"><table><tr><td>Interface</td><td>HTML, CSS, JavaScript; JSZip reads the DOCX</td></tr><tr><td>Check engine</td><td>Exact rules, contrast math from WCAG, every finding carries its cited rule</td></tr><tr><td>Backend</td><td>FastAPI, python-docx, JWT roles, SQLite, hash-chained audit log</td></tr><tr><td>Tests</td><td>Full workflow, role enforcement and audit verification</td></tr></table></div>
+<p><button data-a="selftest">Run engine self-test</button></p>${t?`<p class="pop"><b class="ok">${t.found} of ${t.total}</b> planted problems found in the sample. ${t.extra} extra flags. ${t.clean} flags on a clean paragraph.</p>`:""}<p class="why">Round 1 prototype result: 92 of 97 planted errors found on 75 generated documents, 0 flags on 10 clean documents. I wrote both engine and tests, so this is not independent.</p></div>
+<div class="pan"><h3>Three improvements for Round 3</h3><p><b>1. AI judge with verified quotes.</b> A language model reads retrieved passages from the sources and must quote the passage it relies on. Proofmark verifies the quote exists and supports the finding, or drops it. This finds issues exact rules cannot, such as vague superlatives.</p><p><b>2. Multi-user workspaces.</b> PostgreSQL, real logins, and workspaces where an agency sees only its own documents, with the audit log stored on the server.</p><p><b>3. Insights from review behaviour.</b> Rules that people keep dismissing are flagged to the owner as unclear, plus an independent test set with precision and recall reported.</p></div></div></div>`}
+function render(){const D=S.doc,i=D?STAGES.indexOf(D.status):-1,n=nextStep(),sn=stepNo();
+document.querySelectorAll("[data-a=role]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===S.role)));
+$("rd").textContent=ROLES[S.role];$("mode").textContent=SERVER?"Connected to the Proofmark server":"Browser demo mode";
+$("app").innerHTML=`<ol class="steps" aria-label="Status">${STAGES.map((s,j)=>`<li class="${j<i||D&&D.status==="Approved"?"d":j===i?"c":""}">${s}</li>`).join("")}</ol><div class="nx"><div><small>Step ${sn} of 6</small>${n[0]}</div>${n[1]?`<button class="p" data-a="${n[2]}" data-v="${esc(n[3]||"")}">${n[1]}</button>`:""}</div><p class="msg" role="status">${esc(S.ui.msg||"")}</p><nav class="tabs">${[["Overview","Overview"],["Workspace","Workspace"],["Library","Source library"],["Log","Audit log"],["Judges","For judges"]].map(t=>`<button class="${S.tab===t[0]?"on":""}" data-a="tab" data-v="${t[0]}">${t[1]}</button>`).join("")}<button class="g" data-a="reset" style="margin-left:auto">Reset demo</button></nav>${{Overview:overTab,Workspace:workTab,Library:libTab,Log:logTab,Judges:judgeTab}[S.tab]()}`;const key=S.tab+"|"+(D?D.status+cur().n:"-");$("app").className=key!==LK?"enter":"";LK=key;requestAnimationFrame(()=>document.querySelectorAll(".bar i").forEach(b=>b.style.width=b.dataset.w+"%"))}
+render();
+(async()=>{try{const r=await fetch("/api/health");SERVER=r.ok&&(await r.json()).ok===true}catch(e){}
+if(SERVER){try{S.lib=await call("/api/library");S.doc=S.doc&&S.doc.id?await call("/api/docs/"+S.doc.id):null;S.log=await call("/api/audit")}catch(e){S.doc=null}save()}
+render()})();
+</script></body></html>
